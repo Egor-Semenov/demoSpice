@@ -167,8 +167,8 @@ vector<vector<T>> MatrixTransp(vector<vector<T>>& matrix1) // Функция создания т
     return matrix2;
 }
 
-//Матрица 1 = матрица В, матрица 2 = матрица сопротивлений, матрица 3 = матрица напряженний
-vector<vector<double>> MatrixRez(vector<vector<int>>& matrix1, vector<vector<double>>& matrix2, vector<vector<double>>& matrix3) {
+    //Матрица 1 = матрица В, матрица 2 = матрица сопротивлений, матрица 3 = матрица напряженний
+    vector<vector<double>> MatrixRez(vector<vector<int>>& matrix1, vector<vector<double>>& matrix2, vector<vector<double>>& matrix3) {
     vector<vector<double>> matrix4(matrix1.size(), vector<double>(matrix1.size())); // Матрица контурных сопротивлений
     vector<vector<double>> matrix5(matrix1.size(), vector<double>(matrix3[0].size())); // Матрица контурных напряжений
     vector<vector<double>> matrix6(matrix5.size(), vector<double>(matrix5[0].size())); // Матрица контурных токов

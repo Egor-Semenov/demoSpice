@@ -5,7 +5,9 @@ class CurrentSource : public CircuitElement
 public:
 	CurrentSource(double value):
 		CircuitElement(value) { }
-	char type() const override { return 'I'; }
-private:
 
+	char type() const override
+	{ 
+		return 'I';
+	}
 };

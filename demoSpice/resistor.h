@@ -3,8 +3,11 @@
 class Resistor : public CircuitElement
 {
 public:
-	Resistor(double value):
+	Resistor(double value):		//Конструктор с параметрами
 		CircuitElement(value) {}
-	char type() const override { return 'R'; }
-private:
+
+	char type() const override 
+	{ 
+		return 'R'; 
+	}
 };

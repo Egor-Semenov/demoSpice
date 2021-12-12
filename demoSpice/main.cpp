@@ -63,7 +63,7 @@ int main()
 	vector<vector<double>> currents = MatrixRez(circuit.getContoursCoef(), circuit.getResistance(), circuit.getVoltage());	
 	//Создание и получение матрицы токов
 
-	printResult(currents, circuit.getValues());		//Ввывод значений искомых токов
+	printResult(currents, circuit.getValues());		//Вывод значений искомых токов
 	system("pause");	//Ожидание ввода символа для закрытия консоли
 	return 0;
 }

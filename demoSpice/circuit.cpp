@@ -1,21 +1,19 @@
-#include"circuit.h"  //сделать проверки на корректный ввод
-#include"resistor.h" //Не получится ввести мультиграфы, для мультиграфом лучше было сделать ввод с менюшкой, и скорее всего 4-ёх мерный массив
-#include"voltageSource.h" //цвета можно заменить на enum
-#include"correctInput.h"
-#include<stack>
-#include<list>
+#include "circuit.h"  
+#include "resistor.h" 
+#include "voltageSource.h" 
+#include "correctInput.h"
+#include <stack>
+#include <list>
 
 using namespace std;
 
-istream& operator>>(istream& in, Circuit& circuit)// Функция перегрузки оператора потока ввода данных
+istream& operator>>(istream& in, Circuit& circuit)	// Функция перегрузки оператора потока ввода данных
 {
 	cout << "Граф цепи: " << endl;
 	cout << "Введите количество вершин графа: ";
 	int nVertex;	//Переменная количества вершин графа
 	in >> nVertex;		//Ввод графа
-	/*if (nVertex <= 0) //добавить нормальную проверку на неправельное кол-во вершин
-		return in;*/
-	circuit.values.resize(nVertex);
+	circuit.values.resize(nVertex);		//Установление количества вершин для графа
 	for (int i = 0; i < nVertex; ++i)
 		circuit.values[i].resize(nVertex, vector<double>(1, -1));
 	circuit.elements.resize(nVertex);
@@ -23,17 +21,17 @@ istream& operator>>(istream& in, Circuit& circuit)// Функция перегрузки оператор
 		circuit.elements[i].resize(nVertex, vector<char>(1, '0'));
 
 	cout << "Первая вершина -> вторая вершина -> (U/R) -> value" << endl;
-	int fVertex = 0, sVertex = 0;
-	double value = 0;
-	char unit = '0';
+	int fVertex = 0, sVertex = 0;	// Объявление первой и второй вершин для ввовда схемы
+	double value = 0;	// Числовое значение вводимой физической величины
+	char unit = '0';	// Символьное обозначение физической величины (u-voltage и r-resistance)
 
-	while (true)
+	while (true)	// Процесс ввода схемы
 	{
 		cout << "Введите первую вершину: ";
-		correctInput(fVertex);
+		correctInput(fVertex);	// Функция ввода данных, номера вершин начинать с нуля!!!
 		cout << "Введите вторую вершину: ";
 		correctInput(sVertex);
-		if (fVertex < 0 || sVertex < 0)
+		if (fVertex < 0 || sVertex < 0)		// Проверка корректности ввода номера вершины графа
 		{
 			break;
 		}
@@ -42,13 +40,13 @@ istream& operator>>(istream& in, Circuit& circuit)// Функция перегрузки оператор
 		correctInput(unit);
 		cout << "Введите значение физической величины: ";
 		correctInput(value);
-		if (fVertex >= nVertex || sVertex >= nVertex)
+		if (fVertex >= nVertex || sVertex >= nVertex)	// Проверка возможности существования введённых вершин
 		{
 			cout << "Такие вершины не существуют. Попробуйте еще раз." << endl;
 		}
 		else
 		{
-			if (unit == 'U' || unit == 'u')
+			if (unit == 'U' || unit == 'u')		// Определение физической характеристики введённого символа 
 			{
 				if (circuit.elements[fVertex][sVertex][0] == '0') //Если до этого ничего не записывали, то меняем пустое значение
 				{
@@ -61,7 +59,7 @@ istream& operator>>(istream& in, Circuit& circuit)// Функция перегрузки оператор
 					circuit.values[fVertex][sVertex].push_back(value);
 				}	
 			}
-			else if (unit == 'R' || unit == 'r')
+			else if (unit == 'R' || unit == 'r')	// Определение физической характеристики введённого символа 
 			{
 				if (circuit.elements[fVertex][sVertex][0] == '0') //Если до этого ничего не записывали, то меняем пустое значение
 				{
@@ -74,33 +72,37 @@ istream& operator>>(istream& in, Circuit& circuit)// Функция перегрузки оператор
 					circuit.values[fVertex][sVertex].push_back(value);
 				}
 			}
-			else
+			else	// Символ физической величины введён некорректно
 			{
 				cout << "Введен неверный элемент." << endl;
 			}
 		}
 	}
+
 	return in;
 }
 
 
 
-void printMatrix(vector<vector<int>>& matrix)
+void printMatrix(vector<vector<int>>& matrix)	// Функция вывода матрицы
 {
 	for (int i = 0; i < matrix.size(); ++i)
 	{
 		for (int j = 0; j < matrix[i].size(); ++j)
+		{
 			cout << matrix[i][j] << " ";
+		}
+
 		cout << endl;
 	}
 }
 
-void Circuit::createTree()
+void Circuit::createTree()	// Функция создания дерева графа
 {
-	tree.resize(values.size());
+	tree.resize(values.size());		//Установление количества вершин дерева
 	for (int i = 0; i < tree.size(); ++i)
 		tree[i].resize(values.size(), 0);
-	chords.resize(values.size());
+	chords.resize(values.size());	//Установление количества хорд графа
 	for (int i = 0; i < chords.size(); ++i)
 		chords[i].resize(values.size(), 0);
 	int v = 0;
@@ -141,14 +143,14 @@ void Circuit::createTree()
 			}
 		}
 	}
-	cout << "Tree: " << endl;
+	cout << "Матрица смежности дерева графа: " << endl;
 	printMatrix(tree);
 	cout << endl;
-	cout << "C: " << endl;
+	cout << "Матрица смености хорд графа: " << endl;
 	printMatrix(chords);
 }
 
-int Circuit::vertexDegree(int vertex, vector<vector<int>>& graph)
+int Circuit::vertexDegree(int vertex, vector<vector<int>>& graph)	//Степень вершины
 {
 	int counter = 0;
 	for (int i = 0; i < graph.size(); ++i)
@@ -157,13 +159,13 @@ int Circuit::vertexDegree(int vertex, vector<vector<int>>& graph)
 	return counter;
 }
 
-void mergeLists(list<int>& fList, list<int>& sList)
+void mergeLists(list<int>& fList, list<int>& sList)		//Слияние листов
 {
 	for (auto i : sList)
 		fList.push_back(i);
 }
 
-void Circuit::getIndependentLoop(list<int>& path, int vStart, int vEnd)
+void Circuit::getIndependentLoop(list<int>& path, int vStart, int vEnd)		//Получение независимых контуров
 {
 	int v = vStart;
 	path.push_back(v);
@@ -183,6 +185,7 @@ void Circuit::getIndependentLoop(list<int>& path, int vStart, int vEnd)
 				path = tmp;
 				isEnd = true;
 			}
+
 			for (int i = 0; i < tree.size(); ++i)
 			{
 				if (color[i] == 0 && (tree[i][vEnd] != 0 || tree[vEnd][i] != 0))
@@ -192,7 +195,10 @@ void Circuit::getIndependentLoop(list<int>& path, int vStart, int vEnd)
 				}
 			}
 		}
-		else break;
+		else
+		{
+			break;
+		}
 	}
 	while (!isEnd)
 	{
@@ -200,7 +206,6 @@ void Circuit::getIndependentLoop(list<int>& path, int vStart, int vEnd)
 		{
 			v = path.back();
 			path.pop_back();
-
 		}
 		else
 		{
@@ -218,25 +223,28 @@ void Circuit::getIndependentLoop(list<int>& path, int vStart, int vEnd)
 							isEnd = true;
 							break;
 						}
-						//path.push_back(i);
 						color[i] = 1;
 					}
 				}
 			}
-			else break;
+			else
+			{
+				break;
+			}
 		}
 	}
 	for (auto i = path.begin(); i != path.end(); ++i)
 	{
 		if (color[*i] == 1)
+		{
 			path.erase(i);
+		}
 	}
-	//S.merge(P);
 	mergeLists(path, tmp);
 }
 
 
-void Circuit::printGraph()
+void Circuit::printGraph()		//Вывод на экран графа
 {
 	for (int i = 0; i < elements.size(); ++i)
 	{
@@ -244,19 +252,17 @@ void Circuit::printGraph()
 		{
 			cout << elements[i][j][0] << " ";
 		}
+
 		cout << endl;
 	}
 }
 
-void Circuit::getLoopCoef(list<int>& path, vector<int>& coef) //кое - как работает
+void Circuit::getLoopCoef(list<int>& path, vector<int>& coef)	//Получение контурных коэффициентов 
 {
-	
 	coef.resize(edgesIndex.size(), 0);
-	//int direction = 1;
 	auto i = path.begin();
 	auto j = path.begin();
 	++j;
-	//int index = 0;
 	auto it = edgesIndex.begin();
 	while (j != path.end())
 	{
@@ -272,7 +278,8 @@ void Circuit::getLoopCoef(list<int>& path, vector<int>& coef) //кое - как работа
 		}
 		++i; ++j;
 	}
-	i = --path.end();  //заменить, чтобы контур нормально обходился, не забыть пройти ребро последний -> первый
+
+	i = --path.end();
 	j = path.begin();
 	it = edgesIndex.find(pair<int, int>(*i, *j));
 	if (it == edgesIndex.end())
@@ -284,14 +291,16 @@ void Circuit::getLoopCoef(list<int>& path, vector<int>& coef) //кое - как работа
 	{
 		coef[it->second] = 1;  //ребро направлено по направлению обхода
 	}
+
 	for (auto& i : path)
 	{
 		cout << i << " ";
 	}
+
 	cout << endl;
 }
 
-void Circuit::fillEdgesIndex()  // нумерует ребра графа
+void Circuit::fillEdgesIndex()  //Нумеруем ребра графа
 {
 	int counter = 0;
 	for (int i = 0; i < values.size(); ++i)
@@ -330,28 +339,28 @@ void Circuit::fillContoursCoef()
 		
 }
 
-vector<vector<int>>& Circuit::getContoursCoef()
+vector<vector<int>>& Circuit::getContoursCoef()		//Получение контурных коэффициентов
 {
 	return contoursCoef;
 }
 
 
-vector<vector<double>>& Circuit::getResistance()
+vector<vector<double>>& Circuit::getResistance()	//Получение сопротивления
 {
 	return resistance;
 }
 
-vector<vector<double>>& Circuit::getVoltage()
+vector<vector<double>>& Circuit::getVoltage()	//Получение напряжения
 {
 	return voltage;
 }
 
-vector<vector<vector<double>>>& Circuit::getValues()
+vector<vector<vector<double>>>& Circuit::getValues()	//Получение значения
 {
 	return values;
 }
 
-void Circuit::fillResistAndVolt() //не работает 
+void Circuit::fillResistAndVolt()	//Функция заполнения матриц сопротивлений и напряжений
 {
 	resistance.resize(edgesIndex.size());
 	for (int i = 0; i < resistance.size(); ++i)
