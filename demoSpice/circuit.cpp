@@ -292,7 +292,7 @@ void Circuit::getLoopCoef(list<int>& path, vector<int>& coef)	//Получение контур
 		coef[it->second] = 1;  //ребро направлено по направлению обхода
 	}
 
-	for (auto& i : path)
+	for (auto& i : path) // Вывод матрицы независимых контуров
 	{
 		cout << i << " ";
 	}
@@ -322,6 +322,7 @@ void Circuit::fillContoursCoef()
 	createTree();	//Создание дерева
 	fillEdgesIndex();	//Нумерация рёбер графа
 	list<int> path;		//Создание списка путей обхода данных
+	cout << "Матрица независимых коэффициентов" << endl;
 	for (int i = 0; i < chords.size(); ++i)
 	{
 		for (int j = 0; j < chords[i].size(); ++j)
